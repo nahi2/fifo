@@ -10,8 +10,8 @@ First in first out using buffered channels in go
 
 ## Run Program
 
-> go run main.go
+`go run main.go`
 
 ## Test Program
 
-> go test
+`go test`
