@@ -10,11 +10,12 @@ First in first out using buffered channels in go
 
 ## Run Program
 
-'''
+'''go
 go run main.go
 '''
 
 ## Test Program
-'''
+
+'''go
 go test
 '''
