@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sync"
 )
 
 type FiFoChannel struct {
@@ -32,25 +33,43 @@ func (fifo_channel FiFoChannel) GetSize() int {
 }
 
 func main() {
+	var wg sync.WaitGroup
 	fifo_channel := InitChannel(2)
 
-	fifo_channel.PushMessage("hello")
-	fifo_channel.PushMessage("world")
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		fifo_channel.PushMessage("hello")
+	}()
+	go func() {
+		defer wg.Done()
+		fifo_channel.PushMessage("world")
+	}()
 
-	println(fifo_channel.GetSize())
-	msg1, err1 := fifo_channel.PullMessage()
-	if err1 != nil {
-		fmt.Println("Error pulling message:", err1)
-	} else {
-		fmt.Println("Pulled Message:", msg1)
-	}
+	wg.Wait()
 
-	msg2, err2 := fifo_channel.PullMessage()
-	if err2 != nil {
-		fmt.Println("Error pulling message:", err2)
-	} else {
-		fmt.Println("Pulled Message:", msg2)
-	}
+	fmt.Println(fifo_channel.GetSize())
 
-	println(fifo_channel.GetSize())
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		msg, err := fifo_channel.PullMessage()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(msg)
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		msg, err := fifo_channel.PullMessage()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(msg)
+		}
+	}()
+
+	wg.Wait()
+	fmt.Println(fifo_channel.GetSize())
 }
