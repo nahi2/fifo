@@ -30,7 +30,11 @@ func TestFiFoChannel_PullMessage(t *testing.T) {
 	fifo := InitChannel(5)
 
 	fifo.PushMessage("hello")
-	message := fifo.PullMessage()
+	message, err := fifo.PullMessage()
+
+	if err != nil {
+		t.Errorf("PullMessage failed: %v", err)
+	}
 
 	if message != "hello" {
 		t.Errorf("Want message: hello, got: %s", message)
