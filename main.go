@@ -16,20 +16,15 @@ func InitChannel(chan_size int) FiFoChannel {
 }
 
 func (fifo_channel FiFoChannel) PushMessage(message string) {
-	select {
-	case fifo_channel.channel <- message:
-	default:
-		fmt.Println("Channel buffer is full, skipping push:", message)
-	}
+	fifo_channel.channel <- message
 }
 
 func (fifo_channel *FiFoChannel) PullMessage() (string, error) {
-	select {
-	case msg := <-fifo_channel.channel:
-		return msg, nil
-	default:
+	msg, ok := <-fifo_channel.channel
+	if !ok {
 		return "", errors.New("channel is empty")
 	}
+	return msg, nil
 }
 
 func (fifo_channel FiFoChannel) GetSize() int {
@@ -37,7 +32,7 @@ func (fifo_channel FiFoChannel) GetSize() int {
 }
 
 func main() {
-	fifo_channel := InitChannel(3)
+	fifo_channel := InitChannel(2)
 
 	fifo_channel.PushMessage("hello")
 	fifo_channel.PushMessage("world")
